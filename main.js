@@ -1,5 +1,5 @@
 
-class Validator{
+class Sjv{
 	constructor(schema)
 	{
 		if(typeof(schema) === "object")
@@ -15,6 +15,7 @@ class Validator{
 				}
 				else
 				{
+					console.log(schema);
 					throw 'Валидатор ' + name + ' не найден.';
 				}
 			}
@@ -26,7 +27,7 @@ class Validator{
 				{
 					if(key.search(/__.+/))
 					{
-						this.validators[key] = new Validator(schema[key]);
+						this.validators[key] = new Sjv(schema[key]);
 					}
 				}
 			}
@@ -35,6 +36,16 @@ class Validator{
 	run(data)
 	{
 		let log = {};
+		if(this.required)
+		{
+			this.required.forEach((required)=>
+			{
+				if (!(required in data))
+				{
+					log[required] = 'Поле ' + required + ' обязательно.';
+				}
+			});
+		}
 		if(typeof(this.validators) === "object")
 		{
 			let keysValidators = Object.keys(this.validators);
@@ -67,7 +78,7 @@ class Validator{
 	{
 		return this.run(data);
 	}
-	
+
 	validator_int(data, schema)
 	{
 		if(!Number.isInteger(data))
